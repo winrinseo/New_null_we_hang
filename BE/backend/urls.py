@@ -20,5 +20,5 @@ from . import views
 
 urlpatterns = [
     path('', inferance.as_view(),name = "inferance"),
-    path('hello', views.index,name = "inferance"),
+    path('hello/<int:barcode_id>', views.index,name = "inferance"),
 ]

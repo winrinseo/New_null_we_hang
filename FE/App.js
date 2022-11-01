@@ -13,6 +13,7 @@ export default function App() {
   const [type, setType] = useState(CameraType.back);
   const camera = useRef();
   const [go , setGo] = useState(-1);
+  const [result,setResult] = useState("시작해주세요");
   useEffect(() =>{
     cameraPermission();
   },[]);
@@ -39,6 +40,7 @@ export default function App() {
   const requestImg = async () => {
     if(ok && go > 0){
       while(go > 0){
+        if(go < 0) break;
         let flag = false;
         if(camera){
           const options = { quality: 0.5, base64: true };
@@ -55,9 +57,11 @@ export default function App() {
           };
           await fetch("http://14.42.190.185:6974/inferance/",fetchOptions).then((response)=>response.json()).
           then(json => {
-            console.log(json.result);
-            if(json.result != null) 
+            console.log(json);
+            if(json.result != 0) {
               flag = true;
+              setResult(json.text);
+            }
           });
           if(flag) break;
         }else{
@@ -65,6 +69,8 @@ export default function App() {
           break;
         }
       } 
+    }else{
+      setResult("시작해주세요");
     }
   }
   
@@ -82,7 +88,10 @@ export default function App() {
         ref={camera}>
         </Camera>
       </View>
-      <View style={styles.bot}></View>
+      <View style={styles.bot}>
+        <Text style={{fontSize : 50}}>{result}</Text>
+
+      </View>
       
     </TouchableOpacity>
   );
@@ -96,7 +105,7 @@ const styles = StyleSheet.create({
   nav:{
     flex : 1,
     justifyContent: 'center',
-    backgroundColor: 'teal',
+    
   },
   bd:{
     flex:3,
@@ -106,7 +115,7 @@ const styles = StyleSheet.create({
   },
   bot:{
     flex:1,
-    backgroundColor: 'blue',
+    
   },
   ft:{
     fontSize: 50,
